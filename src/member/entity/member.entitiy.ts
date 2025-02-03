@@ -20,8 +20,8 @@ export class Member {
   @Column({ type: 'varchar', length: 225 })
   mbr_nickname: string;
 
-  @Column({ type: 'varchar', length: 225 })
-  mbr_photo: string;
+  @Column({ type: 'varchar', length: 225, nullable: true })
+  mbr_photo: string | null;
 
   @Column({ type: 'varchar', length: 100 })
   mbr_pwd: string;
@@ -44,8 +44,8 @@ export class Member {
   })
   mbr_gender: string;
 
-  @Column({ type: 'varchar', length: 8 })
-  mbr_birth_day: string;
+  @Column({ type: 'date' })
+  mbr_birth_day: Date;
 
   @Column({ type: 'varchar', length: 20 })
   mbr_phone: string;
@@ -53,29 +53,29 @@ export class Member {
   @Column({ type: 'varchar', length: 100 })
   mbr_email: string;
 
-  @Column({ type: 'enum', enum: ['Y', 'N'] })
-  mbr_svc_use_pcy_agmt_yn: string;
+  //   @Column({ type: 'enum', enum: ['Y', 'N'] })
+  //   mbr_svc_use_pcy_agmt_yn: string;
 
-  @Column({ type: 'enum', enum: ['Y', 'N'] })
-  mbr_info_proc_agmt_yn: string;
+  //   @Column({ type: 'enum', enum: ['Y', 'N'] })
+  //   mbr_info_proc_agmt_yn: string;
 
-  @Column({ type: 'enum', enum: ['Y', 'N'] })
-  mbr_loc_base_svc_agmt_yn: string;
+  //   @Column({ type: 'enum', enum: ['Y', 'N'] })
+  //   mbr_loc_base_svc_agmt_yn: string;
 
-  @Column({ type: 'enum', enum: ['Y', 'N'] })
-  mbr_mkt_info_recv_agmt_yn: string;
+  //   @Column({ type: 'enum', enum: ['Y', 'N'] })
+  //   mbr_mkt_info_recv_agmt_yn: string;
 
-  @Column({ type: 'enum', enum: ['Y', 'N'] })
-  mbr_news_feed_push_yn: string;
+  //   @Column({ type: 'enum', enum: ['Y', 'N'] })
+  //   mbr_news_feed_push_yn: string;
 
-  @Column({ type: 'enum', enum: ['Y', 'N'] })
-  mbr_ntc_push_yn: string;
+  //   @Column({ type: 'enum', enum: ['Y', 'N'] })
+  //   mbr_ntc_push_yn: string;
 
   @Column({ type: 'varchar', length: 225 })
   mbr_lastlogin_ip: string;
 
-  @Column({ type: 'timestamp' })
-  mbr_lastlogin_date: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  mbr_lastlogin_date: Date | null;
 
   @Column({ type: 'varchar', length: 225 })
   mbr_address1: string;
