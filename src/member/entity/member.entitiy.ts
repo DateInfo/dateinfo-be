@@ -3,11 +3,13 @@ import {
   AfterRemove,
   AfterUpdate,
   Column,
+  CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('Member')
 export class Member {
   @PrimaryGeneratedColumn()
   mbr_id: number;
@@ -81,8 +83,11 @@ export class Member {
   @Column({ type: 'varchar', length: 225 })
   mbr_address2: string;
 
-  @Column({ type: 'datetime' })
+  @CreateDateColumn({ type: 'datetime' })
   mbr_register_date: Date;
+
+  @UpdateDateColumn({ type: 'datetime' })
+  mbr_pwd_last_changed: Date;
 
   @AfterInsert()
   logInsert() {
