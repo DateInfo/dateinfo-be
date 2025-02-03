@@ -74,7 +74,7 @@ export class Member {
   @Column({ type: 'varchar', length: 225 })
   mbr_lastlogin_ip: string;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'timestamp' })
   mbr_lastlogin_date: Date;
 
   @Column({ type: 'varchar', length: 225 })
@@ -83,11 +83,14 @@ export class Member {
   @Column({ type: 'varchar', length: 225 })
   mbr_address2: string;
 
-  @CreateDateColumn({ type: 'datetime' })
+  @CreateDateColumn({ type: 'timestamp' })
   mbr_register_date: Date;
 
-  @UpdateDateColumn({ type: 'datetime' })
+  @UpdateDateColumn({ type: 'timestamp' })
   mbr_pwd_last_changed: Date;
+
+  @Column({ type: 'boolean', default: false })
+  isDeleted: boolean;
 
   @AfterInsert()
   logInsert() {

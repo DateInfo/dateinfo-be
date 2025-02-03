@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { z } from 'zod';
 import { DatabaseModule } from './db/db.module';
+import { MemberModule } from './member/member.module';
 
 const configSchema = z.object({
   BACKEND_PORT: z.number().min(1).max(65535),
@@ -38,6 +39,7 @@ const validateConfig = (config: Record<string, unknown>) => {
       validate: validateConfig, // 여기서 유효성 검사 함수를 사용합니다.
     }),
     DatabaseModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],
