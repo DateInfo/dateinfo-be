@@ -43,13 +43,6 @@ export class Member {
   })
   mbr_type: string;
 
-  @Column({
-    type: 'enum',
-    enum: ['NORMAL', 'REST', 'STOP'],
-    default: 'NORMAL',
-  })
-  mbr_stat: string;
-
   @Column({ type: 'date' })
   mbr_birth_day: Date;
 
@@ -66,18 +59,25 @@ export class Member {
   @Column({ type: 'boolean', default: false })
   isDeleted: boolean;
 
+  @Column({
+    type: 'enum',
+    enum: ['NORMAL', 'REST', 'STOP'],
+    default: 'NORMAL',
+  })
+  mbr_stat: string;
+
   // Nullable
   @Column({ type: 'varchar', length: 225, nullable: true })
-  mbr_photo: string | null;
+  mbr_photo?: string;
 
   @Column({ type: 'varchar', length: 225, nullable: true })
-  mbr_lastlogin_ip: string;
+  mbr_lastlogin_ip?: string;
 
   @UpdateDateColumn({ type: 'timestamp', nullable: true })
-  mbr_pwd_last_changed: Date;
+  mbr_pwd_last_changed?: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  mbr_lastlogin_date: Date | null;
+  mbr_lastlogin_date?: Date;
 
   //   @Column({ type: 'enum', enum: ['Y', 'N'] })
   //   mbr_svc_use_pcy_agmt_yn: string;
