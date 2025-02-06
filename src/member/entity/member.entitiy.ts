@@ -99,7 +99,7 @@ export class Member {
 
   @AfterInsert()
   logInsert() {
-    console.log('Inserted Member');
+    console.log(`Inserted Member ${this.mbr_name}`);
     // console.table([{ id: this.mbr_id, name: this.mbr_name }]);
     console.table([this]);
   }
