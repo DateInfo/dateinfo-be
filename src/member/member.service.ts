@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Member } from './entity/member.entitiy';
 import { Repository } from 'typeorm';
+import { Member } from './entity/member.entitiy';
+import { CreateMemberDto } from './dtos/create-member.dto';
 
 @Injectable()
 export class MemberService {
-  constructor(@InjectRepository(Member) private reop: Repository<Member>) {}
+  constructor(@InjectRepository(Member) private repo: Repository<Member>) {}
 
-  async create(memberData: Partial<Member>): Promise<Member> {
-    const member = this.reop.create(memberData);
-    return await this.reop.save(member);
+  async create(createMemberDto: CreateMemberDto): Promise<Member> {
+    const member = this.repo.create(createMemberDto);
+    return await this.repo.save(member);
   }
 }
