@@ -12,4 +12,8 @@ export class MemberService {
     const member = this.repo.create(createMemberDto);
     return await this.repo.save(member);
   }
+
+  async getAllMembers(): Promise<Member[]> {
+    return await this.repo.find();
+  }
 }
