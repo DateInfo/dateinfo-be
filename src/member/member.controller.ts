@@ -8,7 +8,7 @@ import { CreateMemberDto } from './dtos/create-member.dto';
 export class MemberController {
   constructor(private readonly memberService: MemberService) {}
 
-  @Post()
+  @Post('/signup')
   @ApiOperation({ summary: 'Create a new member' }) // API 설명 추가
   @ApiResponse({
     status: 201,
