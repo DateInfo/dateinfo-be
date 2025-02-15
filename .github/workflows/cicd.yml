@@ -50,6 +50,8 @@ jobs:
         run: |
           echo "${{ secrets.PROD_KEY }}" > private_key.pem
           chmod 600 private_key.pem
+          chmod a+w private_key.pem
+          ls -l
           scp -o StrictHostKeyChecking=no -i private_key.pem deploy_script.sh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/tmp/deploy_script.sh
 
       - name: Execute deployment script on EC2
