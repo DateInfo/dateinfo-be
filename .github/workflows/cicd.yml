@@ -43,7 +43,7 @@ jobs:
           echo 'git pull origin main' >> deploy_script.sh      # 최신 코드 가져오기
           echo 'npm install' >> deploy_script.sh               # 의존성 설치
           echo 'npm run build' >> deploy_script.sh             # 빌드
-          echo 'pm2 restart dateinfo' >> deploy_script.sh      # PM2로 애플리케이션 재시작
+          echo 'pm2 restart dateinfo-be' >> deploy_script.sh      # PM2로 애플리케이션 재시작
           chmod +x deploy_script.sh
 
       - name: Upload deployment script to EC2
