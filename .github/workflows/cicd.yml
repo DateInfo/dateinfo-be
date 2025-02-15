@@ -43,7 +43,7 @@ jobs:
         run: |
           echo "${{ secrets.PROD_KEY }}" > private_key.pem
           chmod 400 private_key.pem
-          scp  -P ${{ secrets.PRDO_PORT }} -o StrictHostKeyChecking=no -i private_key.pem deploy_script.sh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/tmp/deploy_script.sh
+          scp  -P ${{ secrets.PROD_PORT }} -o StrictHostKeyChecking=no -i private_key.pem deploy_script.sh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/tmp/deploy_script.sh
 
       - name: Execute deployment script on EC2
         run: |
