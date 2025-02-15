@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMemberDto } from './dtos/create-member.dto';
@@ -25,5 +25,11 @@ export class MemberController {
   @Get('/all')
   async getAllMembers(): Promise<Member[]> {
     return await this.memberService.getAllMembers();
+  }
+
+  // 특정 아이디로 회원찾기
+  @Get('/id/:id')
+  async getUserById(@Param('id') id: string) {
+    return await this.memberService.findUserById(parseInt(id));
   }
 }
