@@ -39,7 +39,7 @@ jobs:
       - name: Create deployment script
         run: |
           echo '#!/bin/bash' > deploy_script.sh
-          echo 'cd /home/ubuntu/dateinfo' >> deploy_script.sh  # 애플리케이션 경로 수정
+          echo 'cd /home/ubuntu/dateinfo-be' >> deploy_script.sh  # 애플리케이션 경로 수정
           echo 'git pull origin main' >> deploy_script.sh      # 최신 코드 가져오기
           echo 'npm install' >> deploy_script.sh               # 의존성 설치
           echo 'npm run build' >> deploy_script.sh             # 빌드
