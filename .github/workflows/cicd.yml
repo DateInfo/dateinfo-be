@@ -39,11 +39,18 @@ jobs:
       - name: Create deployment script
         run: |
           echo '#!/bin/bash' > deploy_script.sh
-          echo 'cd /home/ubuntu/dateinfo-be' >> deploy_script.sh  # 애플리케이션 경로 수정
-          echo 'git pull origin main' >> deploy_script.sh      # 최신 코드 가져오기
-          echo 'npm install' >> deploy_script.sh               # 의존성 설치
-          echo 'npm run build' >> deploy_script.sh             # 빌드
-          echo 'pm2 restart dateinfo-be' >> deploy_script.sh      # PM2로 애플리케이션 재시작
+          echo 'echo "🚀 배포 스크립트 실행 시작"' >> deploy_script.sh
+          echo 'cd /home/ubuntu/dateinfo-be || exit' >> deploy_script.sh
+          echo 'echo "🔄 최신 코드 가져오기..."' >> deploy_script.sh
+          echo 'git pull origin main' >> deploy_script.sh
+          echo 'echo "📦 의존성 설치..."' >> deploy_script.sh
+          echo 'npm install' >> deploy_script.sh
+          echo 'echo "🏗️ 빌드 실행..."' >> deploy_script.sh
+          echo 'npm run build' >> deploy_script.sh
+          echo 'echo "🔄 PM2 애플리케이션 재시작..."' >> deploy_script.sh
+          echo 'pm2 list' >> deploy_script.sh
+          echo 'pm2 restart dateinfo-be || pm2 start dist/main.js --name dateinfo-be' >> deploy_script.sh
+          echo 'echo "✅ 배포 완료!"' >> deploy_script.sh
           chmod +x deploy_script.sh
 
       - name: Upload deployment script to EC2
