@@ -10,41 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '22'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Build the application
-      run: npm run build  # NestJS의 빌드 스크립트
+      - name: Build the application
+        run: npm run build # NestJS의 빌드 스크립트
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build  # 빌드가 완료된 후에 실행
+    needs: build # 빌드가 완료된 후에 실행
 
     steps:
-    - name: Create deployment script
-      run: |
-        echo '#!/bin/bash' > deploy_script.sh
-        echo 'cd /path/to/your/app/dateinfo' >> deploy_script.sh  # 애플리케이션 경로
-        echo 'git pull origin main' >> deploy_script.sh  # 최신 코드 가져오기
-        echo 'npm install' >> deploy_script.sh            # 의존성 설치
-        echo 'npm run build' >> deploy_script.sh          # 빌드
-        echo 'pm2 restart your-app' >> deploy_script.sh    # PM2로 애플리케이션 재시작
-        chmod +x deploy_script.sh
+      - name: Create deployment script
+        run: |
+          echo '#!/bin/bash' > deploy_script.sh
+          echo 'cd /home/ubuntu/dateinfo' >> deploy_script.sh  # 애플리케이션 경로 수정
+          echo 'git pull origin main' >> deploy_script.sh      # 최신 코드 가져오기
+          echo 'npm install' >> deploy_script.sh               # 의존성 설치
+          echo 'npm run build' >> deploy_script.sh             # 빌드
+          echo 'pm2 restart dateinfo' >> deploy_script.sh      # PM2로 애플리케이션 재시작
+          chmod +x deploy_script.sh
 
-    - name: Upload deployment script to EC2
-      run: |
-        echo "${{ secrets.PROD_KEY }}" > private_key.pem
-        chmod 600 private_key.pem
-        scp -o StrictHostKeyChecking=no -i private_key.pem deploy_script.sh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/tmp/deploy_script.sh
+      - name: Upload deployment script to EC2
+        run: |
+          echo "${{ secrets.PROD_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+          scp -o StrictHostKeyChecking=no -i private_key.pem deploy_script.sh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/tmp/deploy_script.sh
 
-    - name: Execute deployment script on EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} 'bash /tmp/deploy_script.sh'
+      - name: Execute deployment script on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} 'bash /tmp/deploy_script.sh'
