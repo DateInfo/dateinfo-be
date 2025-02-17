@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Member } from './entity/member.entitiy';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { WebhookService } from 'src/webhook/webhook.service';
+import { buildWebhookData } from 'src/webhook/webhook.utils';
 
 @Injectable()
 export class MemberService {
@@ -20,26 +21,9 @@ export class MemberService {
     const savedMember = await this.repo.save(member);
 
     // Webhook 데이터 구성
-    const webhookData = {
-      mbr_id: savedMember.mbr_id,
-      mbr_email: savedMember.mbr_email,
-      mbr_name: savedMember.mbr_name,
-      mbr_lastlogin_date: new Date().toISOString(),
-    };
-
-    // Webhook 전송 (비동기 실행, 회원가입 프로세스에 영향 X)
-    try {
-      await this.webhookService.sendToMakeWebhook(webhookData);
-      this.logger.log(
-        `Make.com Webhook 전송 성공: ${JSON.stringify(webhookData)}`,
-      );
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        this.logger.error(`Make.com Webhook 요청 실패: ${error.message}`);
-      } else {
-        this.logger.error('Make.com Webhook 요청 실패: 알 수 없는 오류 발생');
-      }
-    }
+    const webhookData = buildWebhookData(savedMember);
+    // Webhook 전송
+    await this.webhookService.sendToMakeWebhook(webhookData);
 
     return savedMember;
   }
