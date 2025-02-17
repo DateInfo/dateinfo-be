@@ -1,17 +1,31 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Member } from './entity/member.entitiy';
 import { CreateMemberDto } from './dtos/create-member.dto';
+import { WebhookService } from 'src/webhook/webhook.service';
+import { buildWebhookData } from 'src/webhook/webhook.utils';
 
 @Injectable()
 export class MemberService {
-  constructor(@InjectRepository(Member) private repo: Repository<Member>) {}
+  private readonly logger = new Logger(MemberService.name);
+
+  constructor(
+    @InjectRepository(Member) private repo: Repository<Member>,
+    private readonly webhookService: WebhookService,
+  ) {}
 
   // 회원 생성
   async create(createMemberDto: CreateMemberDto): Promise<Member> {
     const member = this.repo.create(createMemberDto);
-    return await this.repo.save(member);
+    const savedMember = await this.repo.save(member);
+
+    // Webhook 데이터 구성
+    const webhookData = buildWebhookData(savedMember);
+    // Webhook 전송
+    await this.webhookService.sendToMakeWebhook(webhookData);
+
+    return savedMember;
   }
 
   // 모든 회원 조회
