@@ -10,8 +10,8 @@ import { Question } from './question.entity';
 
 @Entity()
 export class Survey {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ type: 'varchar', length: 255 })
   title: string;
@@ -19,12 +19,12 @@ export class Survey {
   @Column({ type: 'text', nullable: true })
   description: string;
 
+  @OneToMany(() => Question, (question) => question.survey, { cascade: true })
+  questions: Question[];
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToMany(() => Question, (question) => question.survey, { cascade: true })
-  questions: Question[];
 }

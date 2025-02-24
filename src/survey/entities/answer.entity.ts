@@ -11,8 +11,8 @@ import { Option } from './option.entity';
 
 @Entity()
 export class Answer {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn() // BIGINT, AUTO_INCREMENT
+  id: number;
 
   @ManyToOne(() => Survey, { onDelete: 'CASCADE' })
   survey: Survey;
@@ -21,11 +21,11 @@ export class Answer {
   question: Question;
 
   @ManyToOne(() => Option, { nullable: true, onDelete: 'SET NULL' })
-  selectedOption?: Option; // 객관식 응답
+  selectedOption?: Option;
 
   @Column({ type: 'text', nullable: true })
-  answerText?: string; // 주관식 응답
+  answerText?: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 }

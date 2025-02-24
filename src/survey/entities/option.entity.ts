@@ -10,8 +10,8 @@ import { Question } from './question.entity';
 
 @Entity()
 export class Option {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn() // BIGINT, AUTO_INCREMENT
+  id: number;
 
   @ManyToOne(() => Question, (question) => question.options, {
     onDelete: 'CASCADE',
@@ -21,9 +21,9 @@ export class Option {
   @Column({ type: 'text' })
   optionText: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 }
