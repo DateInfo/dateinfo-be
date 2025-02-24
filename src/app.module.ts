@@ -8,6 +8,7 @@ import { MemberModule } from './member/member.module';
 import { WebhookService } from './webhook/webhook.service';
 import { WebhookModule } from './webhook/webhook.module';
 import { HttpModule } from '@nestjs/axios';
+import { SurveyModule } from './survey/survey.module';
 
 const configSchema = z.object({
   BACKEND_PORT: z.number().min(1).max(65535),
@@ -47,6 +48,7 @@ const validateConfig = (config: Record<string, unknown>) => {
     DatabaseModule,
     MemberModule,
     WebhookModule,
+    SurveyModule,
   ],
   controllers: [AppController],
   providers: [AppService, WebhookService],
