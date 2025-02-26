@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Survey } from './entities/survey.entity';
-import { Question } from './entities/question.entity';
-import { Option } from './entities/option.entity';
-import { Answer } from './entities/answer.entity';
-import { CreateSurveyDto } from './dtos/create-survey.dto';
+import { Survey } from '../entities/survey.entity';
+import { Question } from '../entities/question.entity';
+import { Option } from '../entities/option.entity';
+import { Answer } from '../entities/answer.entity';
+import { CreateSurveyDto } from '../dtos/create-survey.dto';
 
 @Injectable()
 export class SurveyService {

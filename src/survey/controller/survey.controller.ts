@@ -1,7 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { SurveyService } from './survey.service';
-import { Survey } from './entities/survey.entity';
-import { CreateSurveyDto } from './dtos/create-survey.dto';
+import { SurveyService } from '../services/survey.service';
+import { Survey } from '../entities/survey.entity';
+import { CreateSurveyDto } from '../dtos/create-survey.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Survey')
