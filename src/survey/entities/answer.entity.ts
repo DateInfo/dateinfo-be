@@ -8,11 +8,15 @@ import {
 import { Survey } from './survey.entity';
 import { Question } from './question.entity';
 import { Option } from './option.entity';
+import { Member } from 'src/member/entity/member.entitiy';
 
 @Entity()
 export class Answer {
   @PrimaryGeneratedColumn() // BIGINT, AUTO_INCREMENT
   id: number;
+
+  @ManyToOne(() => Member, { onDelete: 'CASCADE' })
+  member: Member;
 
   @ManyToOne(() => Survey, { onDelete: 'CASCADE' })
   survey: Survey;
