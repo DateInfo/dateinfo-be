@@ -26,6 +26,9 @@ export class Answer {
   @Column({ type: 'text', nullable: true })
   answerText?: string;
 
+  @Column({ type: 'text', nullable: true })
+  aiAnswer?: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 }
