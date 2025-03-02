@@ -8,7 +8,7 @@ import {
 import { Survey } from './survey.entity';
 import { Question } from './question.entity';
 import { Option } from './option.entity';
-import { Member } from 'src/member/entity/member.entitiy';
+import { Member } from 'src/member/entity/member.entity';
 
 @Entity()
 export class Answer {
