@@ -6,10 +6,16 @@ import { Option } from './entities/option.entity';
 import { Answer } from './entities/answer.entity';
 import { SurveyService } from './services/survey.service';
 import { SurveyController } from './controller/survey.controller';
+import { AnswerService } from './services/answer.service';
+import { AnswerController } from './controller/answer.controller';
+import { MemberModule } from 'src/member/member.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Survey, Question, Option, Answer])],
-  providers: [SurveyService],
-  controllers: [SurveyController],
+  imports: [
+    TypeOrmModule.forFeature([Survey, Question, Option, Answer]),
+    MemberModule,
+  ],
+  providers: [SurveyService, AnswerService],
+  controllers: [SurveyController, AnswerController],
 })
 export class SurveyModule {}
