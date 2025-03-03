@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Answer } from '../entities/answer.entity';
@@ -23,6 +23,7 @@ export class AnswerService {
     @InjectRepository(Member)
     private memberRepository: Repository<Member>,
   ) {}
+  private readonly logger = new Logger(AnswerService.name);
 
   async createAnswer(createAnswerDto: CreateAnswerDto): Promise<Answer> {
     const { surveyId, questionId, selectedOptionId, answerText, memberId } =
@@ -65,6 +66,23 @@ export class AnswerService {
       member,
     });
 
-    return await this.answerRepository.save(answer);
+    const savedAnswer = await this.answerRepository.save(answer);
+
+    this.logger.log(`✅ Full Saved Answer: ${JSON.stringify(savedAnswer)}`);
+    this.logger.log(`✅ Survey created with id: ${savedAnswer.id}`);
+
+    return savedAnswer;
+  }
+
+  async getAllAnswer(): Promise<Answer[]> {
+    const allAnswer = await this.answerRepository.find({
+      relations: ['member', 'survey', 'question', 'selectedOption'],
+      order: { createdAt: 'DESC' },
+    });
+
+    this.logger.log(`✅ All Answers: ${JSON.stringify(allAnswer)}`);
+    this.logger.log(`✅ Total Answers Count: ${allAnswer.length}`);
+
+    return allAnswer;
   }
 }
