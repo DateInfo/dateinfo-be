@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Member } from './entity/member.entitiy';
+import { Member } from './entity/member.entity';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { WebhookService } from 'src/webhook/webhook.service';
 import { buildWebhookData } from 'src/webhook/webhook.utils';

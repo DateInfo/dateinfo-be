@@ -1,4 +1,4 @@
-import { Member } from 'src/member/entity/member.entitiy';
+import { Member } from 'src/member/entity/member.entity';
 
 export function buildWebhookData(member: Member): Record<string, any> {
   return {
