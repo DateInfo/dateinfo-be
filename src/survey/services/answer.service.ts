@@ -85,4 +85,16 @@ export class AnswerService {
 
     return allAnswer;
   }
+
+  async getAnswerById(answerId: number): Promise<Answer> {
+    const answer = await getEntityOrThrow(
+      this.answerRepository,
+      { id: answerId },
+      `Answer with ID ${answerId} not found`,
+      ['member', 'survey', 'question', 'selectedOption'],
+    );
+
+    this.logger.log(`✅ Retrieved Answer: ${JSON.stringify(answer)}`);
+    return answer;
+  }
 }
