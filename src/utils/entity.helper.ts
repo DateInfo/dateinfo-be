@@ -1,12 +1,21 @@
-import { FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm';
+import {
+  FindOptionsRelations,
+  FindOptionsWhere,
+  ObjectLiteral,
+  Repository,
+} from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 
 export async function getEntityOrThrow<T extends ObjectLiteral>(
   repository: Repository<T>,
   criteria: FindOptionsWhere<T>,
   notFoundMessage: string,
+  relations?: FindOptionsRelations<T>,
 ): Promise<T> {
-  const entity = await repository.findOne({ where: criteria });
+  const entity = await repository.findOne({
+    where: criteria,
+    relations: relations ?? undefined,
+  });
   if (!entity) {
     throw new NotFoundException(notFoundMessage);
   }
