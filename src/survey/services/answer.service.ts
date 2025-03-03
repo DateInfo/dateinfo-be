@@ -49,8 +49,10 @@ export class AnswerService {
       );
     }
 
-    const member = await getEntityOrThrow(
+    const member = await getEntityOrThrow<Member>(
       this.memberRepository,
+      // 제네릭 + 외부 라이브러리(TypeORM) + NestJS 조합에서 eslint가 타입 추론 실패
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       { mbr_id: memberId },
       'Member not found',
     );
