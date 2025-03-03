@@ -1,5 +1,7 @@
 import { FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
+
+const logger = new Logger('EntityHelper');
 
 export async function getEntityOrThrow<T extends ObjectLiteral>(
   repository: Repository<T>,
@@ -12,6 +14,9 @@ export async function getEntityOrThrow<T extends ObjectLiteral>(
     relations: relations ?? undefined,
   });
   if (!entity) {
+    logger.warn(
+      `❌ Entity not found - ${notFoundMessage} / criteria: ${JSON.stringify(criteria)}`,
+    );
     throw new NotFoundException(notFoundMessage);
   }
   return entity;
