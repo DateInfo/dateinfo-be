@@ -16,6 +16,13 @@ export class CreateAnswerDto {
   @IsNumber()
   questionId: number;
 
+  @ApiProperty({
+    description: '응답을 제출한 유저의 ID',
+    example: 1, // 예시 유저 ID
+  })
+  @IsNumber()
+  memberId: number;
+
   @ApiPropertyOptional({
     description: '객관식 응답일 경우 선택된 옵션의 ID',
     example: 1,
