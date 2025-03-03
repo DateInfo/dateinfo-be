@@ -9,10 +9,11 @@ import { SurveyController } from './controller/survey.controller';
 import { AnswerService } from './services/answer.service';
 import { AnswerController } from './controller/answer.controller';
 import { MemberModule } from 'src/member/member.module';
+import { Member } from 'src/member/entity/member.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Survey, Question, Option, Answer]),
+    TypeOrmModule.forFeature([Survey, Question, Option, Answer, Member]),
     MemberModule,
   ],
   providers: [SurveyService, AnswerService],
