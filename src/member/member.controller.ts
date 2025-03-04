@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { MemberService } from './member.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { Member } from './entity/member.entity';
 
@@ -31,5 +31,25 @@ export class MemberController {
   @Get('/id/:id')
   async getUserById(@Param('id') id: string) {
     return await this.memberService.findUserById(parseInt(id));
+  }
+
+  // 각 유저의 Ai 답변보기
+  @Get('/aiAnswer/:id')
+  @ApiOperation({ summary: '설문조사 생성' })
+  @ApiParam({
+    name: 'id',
+    description: '조회할 AI답변의 유저 ID',
+    example: 18,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Ai답변이 조회되었습니다.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '서버 오류로 인해 실패했습니다.',
+  })
+  async getAiAnswer(@Param('id') id: string) {
+    return await this.memberService.findAiAnswer(parseInt(id));
   }
 }
