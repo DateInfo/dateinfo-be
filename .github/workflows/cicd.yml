@@ -29,20 +29,35 @@ jobs:
     needs: build # 빌드가 완료된 후에 실행
 
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.PROD_ACCESS_KEY }} # 등록한 Github Secret.
+          aws-secret-access-key: ${{ secrets.PROD_SECRET_ACCESS_KEY }} # 등록한 Github Secret.
+          aws-region: ap-northeast-2
+
       - name: Create deployment script
         run: |
           echo '#!/bin/bash' > deploy_script.sh
-          echo 'cd /home/ubuntu/dateinfo' >> deploy_script.sh  # 애플리케이션 경로 수정
-          echo 'git pull origin main' >> deploy_script.sh      # 최신 코드 가져오기
-          echo 'npm install' >> deploy_script.sh               # 의존성 설치
-          echo 'npm run build' >> deploy_script.sh             # 빌드
-          echo 'pm2 restart dateinfo' >> deploy_script.sh      # PM2로 애플리케이션 재시작
+          echo 'echo "🚀 배포 스크립트 실행 시작"' >> deploy_script.sh
+          echo 'cd /home/ubuntu/dateinfo-be || exit' >> deploy_script.sh
+          echo 'echo "🔄 최신 코드 가져오기..."' >> deploy_script.sh
+          echo 'git pull origin main' >> deploy_script.sh
+          echo 'echo "📦 의존성 설치..."' >> deploy_script.sh
+          echo 'npm install' >> deploy_script.sh
+          echo 'echo "🏗️ 빌드 실행..."' >> deploy_script.sh
+          echo 'npm run build' >> deploy_script.sh
+          echo 'echo "🔄 PM2 애플리케이션 재시작..."' >> deploy_script.sh
+          echo 'pm2 list' >> deploy_script.sh
+          echo 'pm2 start npm --name dateinfo-be -- run start:prod' >> deploy_script.sh
+          echo 'echo "✅ 배포 완료!"' >> deploy_script.sh
           chmod +x deploy_script.sh
 
       - name: Upload deployment script to EC2
         run: |
           echo "${{ secrets.PROD_KEY }}" > private_key.pem
           chmod 600 private_key.pem
+          ls -l
           scp -o StrictHostKeyChecking=no -i private_key.pem deploy_script.sh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/tmp/deploy_script.sh
 
       - name: Execute deployment script on EC2
