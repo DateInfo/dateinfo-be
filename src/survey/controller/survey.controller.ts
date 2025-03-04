@@ -9,7 +9,14 @@ import {
 import { SurveyService } from '../services/survey.service';
 import { Survey } from '../entities/survey.entity';
 import { CreateSurveyDto } from '../dtos/create-survey.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
+import { SurveyRequestSchema } from '../schemas/survey-request.schema';
 
 @ApiTags('Survey')
 @Controller('survey')
@@ -17,6 +24,10 @@ export class SurveyController {
   constructor(private readonly surveyService: SurveyService) {}
 
   @ApiOperation({ summary: '설문조사 생성' })
+  @ApiBody({
+    description: '설문조사 생성 요청 데이터',
+    schema: SurveyRequestSchema,
+  })
   @ApiResponse({
     status: 201,
     description: '설문조사가 성공적으로 생성되었습니다.',
