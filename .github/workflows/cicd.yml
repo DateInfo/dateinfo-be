@@ -32,8 +32,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.PROD_ACCESS_KEY }} # 등록한 Github Secret.
-          aws-secret-access-key: ${{ secrets.PROD_SECRET_ACCESS_KEY }} # 등록한 Github Secret.
+          aws-access-key-id: ${{ secrets.PROD_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.PROD_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
       - name: Create deployment script
@@ -47,9 +47,10 @@ jobs:
           echo 'npm install' >> deploy_script.sh
           echo 'echo "🏗️ 빌드 실행..."' >> deploy_script.sh
           echo 'npm run build' >> deploy_script.sh
-          echo 'echo "🔄 PM2 애플리케이션 재시작..."' >> deploy_script.sh
-          echo 'pm2 list' >> deploy_script.sh
-          echo 'pm2 restart npm --name dateinfo-be -- run start:prod' >> deploy_script.sh
+          echo 'echo "🛑 기존 PM2 프로세스 삭제..."' >> deploy_script.sh
+          echo 'pm2 delete dateinfo-be || true' >> deploy_script.sh
+          echo 'echo "🚀 PM2로 애플리케이션 시작..."' >> deploy_script.sh
+          echo 'pm2 start npm --name dateinfo-be -- run start:prod' >> deploy_script.sh
           echo 'echo "✅ 배포 완료!"' >> deploy_script.sh
           chmod +x deploy_script.sh
 
@@ -57,7 +58,6 @@ jobs:
         run: |
           echo "${{ secrets.PROD_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          ls -l
           scp -o StrictHostKeyChecking=no -i private_key.pem deploy_script.sh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/tmp/deploy_script.sh
 
       - name: Execute deployment script on EC2
