@@ -20,11 +20,6 @@ export class MemberService {
     const member = this.repo.create(createMemberDto);
     const savedMember = await this.repo.save(member);
 
-    // Webhook 데이터 구성
-    const webhookData = buildWebhookData(savedMember);
-    // Webhook 전송
-    await this.webhookService.sendToMakeWebhook(webhookData);
-
     return savedMember;
   }
 
