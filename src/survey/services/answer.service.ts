@@ -9,7 +9,6 @@ import { Member } from 'src/member/entity/member.entity';
 import { CreateSurveyAnswerDto } from '../dtos/create-answer.dto';
 import { getEntityOrThrow } from 'src/utils/entity.helper';
 import { WebhookService } from 'src/webhook/webhook.service';
-import { buildWebhookData } from 'src/webhook/webhook.utils';
 
 @Injectable()
 export class AnswerService {
@@ -93,11 +92,20 @@ export class AnswerService {
         `Survey answers submitted: ${JSON.stringify(savedAnswers)}`,
       );
 
-      const webhookDataList = savedAnswers.map((answer) =>
-        buildWebhookData(answer),
-      );
+      const webhookPayload = {
+        surveyId: savedAnswers[0].survey.id,
+        memberId: savedAnswers[0].member.mbr_id,
+        memberName: savedAnswers[0].member.mbr_name,
+        memberGender: savedAnswers[0].member.mbr_gender,
+        answers: savedAnswers.reduce((acc, answer) => {
+          acc[answer.question.questionText] =
+            answer.selectedOption?.optionText ?? answer.answerText ?? null;
+          return acc;
+        }, {}),
+      };
+      console.table(webhookPayload);
 
-      await this.webhookService.sendToMakeWebhook(webhookDataList);
+      await this.webhookService.sendToMakeWebhook(webhookPayload);
 
       return {
         message: 'Survey answers submitted successfully',

@@ -79,6 +79,9 @@ export class Member {
   @Column({ type: 'timestamp', nullable: true })
   mbr_lastlogin_date?: Date;
 
+  @Column({ type: 'text', nullable: true })
+  aiAnswer?: string | null;
+
   //   @Column({ type: 'enum', enum: ['Y', 'N'] })
   //   mbr_svc_use_pcy_agmt_yn: string;
 
