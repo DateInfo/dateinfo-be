@@ -1,23 +1,41 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 import { AnswerService } from '../services/answer.service';
-import { CreateAnswerDto } from '../dtos/create-answer.dto';
+import { CreateSurveyAnswerDto } from '../dtos/create-answer.dto';
 import { Answer } from '../entities/answer.entity';
+import { SurveyAnswerRequestSchema } from '../schemas/survey-answer-request.schema';
 
 @ApiTags('Answer')
 @Controller('Answer')
 export class AnswerController {
   constructor(private readonly answerService: AnswerService) {}
 
-  @ApiOperation({ summary: '설문조사 답변 생성' })
+  /**
+   * 설문 답변 제출 API
+   * @param createSurveyAnswerDto - 설문 답변 DTO
+   */
+  @Post()
+  @ApiOperation({
+    summary: '설문 응답 저장',
+    description:
+      '한 번의 요청으로 연애 성향 및 스타일 설문에 대한 모든 답변을 저장합니다.',
+  })
+  @ApiBody({
+    description: '연애 성향 및 스타일 설문 응답 예시',
+    schema: SurveyAnswerRequestSchema,
+  })
   @ApiResponse({
     status: 201,
-    description: '설문조사 답변이 생성되었습니다.',
-    type: Answer,
+    description: '설문 답변이 성공적으로 저장됨',
   })
-  @Post()
-  createAnswer(@Body() createAnswerDto: CreateAnswerDto): Promise<Answer> {
-    return this.answerService.createAnswer(createAnswerDto);
+  async submitAnswers(@Body() createSurveyAnswerDto: CreateSurveyAnswerDto) {
+    return this.answerService.create(createSurveyAnswerDto);
   }
 
   @ApiOperation({ summary: '설문조사 답변 전체 조회' })

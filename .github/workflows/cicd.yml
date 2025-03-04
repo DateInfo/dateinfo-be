@@ -49,7 +49,7 @@ jobs:
           echo 'npm run build' >> deploy_script.sh
           echo 'echo "🔄 PM2 애플리케이션 재시작..."' >> deploy_script.sh
           echo 'pm2 list' >> deploy_script.sh
-          echo 'pm2 start npm --name dateinfo-be -- run start:prod' >> deploy_script.sh
+          echo 'pm2 restart npm --name dateinfo-be -- run start:prod' >> deploy_script.sh
           echo 'echo "✅ 배포 완료!"' >> deploy_script.sh
           chmod +x deploy_script.sh
 
