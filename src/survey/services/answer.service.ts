@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Answer } from '../entities/answer.entity';
@@ -6,72 +6,101 @@ import { Survey } from '../entities/survey.entity';
 import { Question } from '../entities/question.entity';
 import { Option } from '../entities/option.entity';
 import { Member } from 'src/member/entity/member.entity';
-import { CreateAnswerDto } from '../dtos/create-answer.dto';
+import { CreateSurveyAnswerDto } from '../dtos/create-answer.dto';
 import { getEntityOrThrow } from 'src/utils/entity.helper';
 
 @Injectable()
 export class AnswerService {
-  constructor(
-    @InjectRepository(Answer)
-    private answerRepository: Repository<Answer>,
-    @InjectRepository(Survey)
-    private surveyRepository: Repository<Survey>,
-    @InjectRepository(Question)
-    private questionRepository: Repository<Question>,
-    @InjectRepository(Option)
-    private optionRepository: Repository<Option>,
-    @InjectRepository(Member)
-    private memberRepository: Repository<Member>,
-  ) {}
   private readonly logger = new Logger(AnswerService.name);
 
-  async createAnswer(createAnswerDto: CreateAnswerDto): Promise<Answer> {
-    const { surveyId, questionId, selectedOptionId, answerText, memberId } =
-      createAnswerDto;
+  constructor(
+    @InjectRepository(Answer)
+    private readonly answerRepository: Repository<Answer>,
+    @InjectRepository(Survey)
+    private readonly surveyRepository: Repository<Survey>,
+    @InjectRepository(Question)
+    private readonly questionRepository: Repository<Question>,
+    @InjectRepository(Option)
+    private readonly optionRepository: Repository<Option>,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
+  ) {}
 
-    const survey = await getEntityOrThrow(
-      this.surveyRepository,
-      { id: surveyId },
-      'Survey not found',
-    );
-
-    const question = await getEntityOrThrow(
-      this.questionRepository,
-      { id: questionId },
-      'Question not found',
-    );
-
-    let selectedOption: Option | null = null;
-    if (selectedOptionId) {
-      selectedOption = await getEntityOrThrow(
-        this.optionRepository,
-        { id: selectedOptionId },
-        'Option not found',
+  /**
+   * 설문 전체 응답을 DB에 저장 (한 번에 여러 개의 질문에 답변 저장)
+   */
+  async create(
+    createSurveyAnswerDto: CreateSurveyAnswerDto,
+  ): Promise<{ message: string; data: Answer[] }> {
+    try {
+      // 관련 엔티티 조회 (notFoundMessage 추가)
+      const member = await getEntityOrThrow(
+        this.memberRepository,
+        { mbr_id: createSurveyAnswerDto.memberId },
+        'Member not found',
       );
+      const survey = await getEntityOrThrow(
+        this.surveyRepository,
+        { id: createSurveyAnswerDto.surveyId },
+        'Survey not found',
+      );
+
+      // 답변 배열을 순회하면서 저장할 준비
+      const answersToSave: Answer[] = [];
+
+      for (const answerDto of createSurveyAnswerDto.answers) {
+        const question = await getEntityOrThrow(
+          this.questionRepository,
+          { id: answerDto.questionId },
+          'Question not found',
+        );
+        let selectedOption: Option | null = null;
+
+        // ✅ 검증: 객관식과 단답형 중 하나만 있어야 함
+        if (answerDto.selectedOptionId && answerDto.answerText) {
+          throw new BadRequestException(
+            '객관식 답변과 단답형 답변은 동시에 제출할 수 없습니다.',
+          );
+        }
+
+        if (answerDto.selectedOptionId) {
+          selectedOption = await getEntityOrThrow(
+            this.optionRepository,
+            { id: answerDto.selectedOptionId },
+            'Option not found',
+          );
+        }
+
+        // ✅ `new Answer()`를 사용하여 엔티티 인스턴스를 직접 생성
+        const newAnswer = new Answer();
+        newAnswer.member = member; // `mbr_id`가 해결됨
+        newAnswer.survey = survey;
+        newAnswer.question = question;
+        newAnswer.selectedOption = selectedOption || null;
+        newAnswer.answerText = answerDto.answerText || null;
+        newAnswer.aiAnswer = ''; // 기본값 설정
+
+        answersToSave.push(newAnswer);
+      }
+
+      // ✅ 한 번에 여러 개의 답변 저장
+      const savedAnswers = await this.answerRepository.save(answersToSave);
+
+      this.logger.log(
+        `Survey answers submitted: ${JSON.stringify(savedAnswers)}`,
+      );
+
+      return {
+        message: 'Survey answers submitted successfully',
+        data: savedAnswers,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error saving survey answers: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error instanceof Error ? error.stack : '',
+      );
+      throw new BadRequestException('Failed to save survey answers');
     }
-
-    const member = await getEntityOrThrow<Member>(
-      this.memberRepository,
-      // 제네릭 + 외부 라이브러리(TypeORM) + NestJS 조합에서 eslint가 타입 추론 실패
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      { mbr_id: memberId },
-      'Member not found',
-    );
-
-    const answer = this.answerRepository.create({
-      survey,
-      question,
-      selectedOption: selectedOption ?? undefined, // 만약 selectedOption이 null이면 undefined로 할당
-      answerText,
-      member,
-    });
-
-    const savedAnswer = await this.answerRepository.save(answer);
-
-    this.logger.log(`✅ Full Saved Answer: ${JSON.stringify(savedAnswer)}`);
-    this.logger.log(`✅ Survey created with id: ${savedAnswer.id}`);
-
-    return savedAnswer;
   }
 
   async getAllAnswer(): Promise<Answer[]> {

@@ -2,6 +2,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -36,6 +37,55 @@ export class SurveyService {
       this.logger.error('Error creating survey', (error as Error).stack);
       throw new InternalServerErrorException(
         '설문 저장 중 오류가 발생했습니다.',
+      );
+    }
+  }
+
+  // 전체 설문조사 조회
+  async findAllSurveys(): Promise<Survey[]> {
+    try {
+      const surveys = await this.surveyRepository.find({
+        relations: ['questions', 'questions.options'], // 필요하면 관계도 미리 로드
+        order: { createdAt: 'DESC' },
+      });
+
+      if (!surveys.length) {
+        this.logger.warn('No surveys found');
+      } else {
+        this.logger.log(`Found ${surveys.length} surveys`);
+      }
+
+      return surveys;
+    } catch (error) {
+      this.logger.error('Error fetching all surveys', (error as Error).stack);
+      throw new InternalServerErrorException(
+        '전체 설문조사 조회 중 오류가 발생했습니다.',
+      );
+    }
+  }
+
+  // 단일 설문조사 조회
+  async findSurveyById(id: number): Promise<Survey> {
+    try {
+      const survey = await this.surveyRepository.findOne({
+        where: { id },
+        relations: ['questions', 'questions.options'], // 필요하면 관계도 함께 로드
+      });
+
+      if (!survey) {
+        this.logger.warn(`Survey with id ${id} not found`);
+        throw new NotFoundException(`ID ${id}인 설문조사를 찾을 수 없습니다.`);
+      }
+
+      this.logger.log(`Survey found with id: ${id}`);
+      return survey;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching survey with id ${id}`,
+        (error as Error).stack,
+      );
+      throw new InternalServerErrorException(
+        '설문조사 조회 중 오류가 발생했습니다.',
       );
     }
   }
