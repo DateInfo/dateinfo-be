@@ -1,10 +1,14 @@
-import { Member } from 'src/member/entity/member.entity';
+import { Answer } from 'src/survey/entities/answer.entity';
 
-export function buildWebhookData(member: Member): Record<string, any> {
+export function buildWebhookData(answer: Answer): Record<string, any> {
   return {
-    mbr_id: member.mbr_id,
-    mbr_email: member.mbr_email,
-    mbr_name: member.mbr_name,
-    mbr_lastlogin_date: new Date().toISOString(),
+    answerId: answer.id,
+    surveyId: answer.survey.id,
+    questionId: answer.question.id,
+    selectedOptionId: answer.selectedOption?.id ?? null,
+    answerText: answer.answerText,
+    aiAnswer: answer.aiAnswer,
+    memberId: answer.member.mbr_id,
+    createdAt: answer.createdAt.toISOString(),
   };
 }
