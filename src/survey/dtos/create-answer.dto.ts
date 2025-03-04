@@ -1,41 +1,48 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateAnswerDto {
-  @ApiProperty({
-    description: '응답이 연결된 설문조사의 ID',
-    example: 1,
-  })
+class AnswerDto {
+  @ApiProperty({ description: '질문 ID', example: 32 })
   @IsNumber()
-  surveyId: number;
-
-  @ApiProperty({
-    description: '응답이 연결된 질문의 ID',
-    example: 2,
-  })
-  @IsNumber()
+  @IsNotEmpty()
   questionId: number;
 
   @ApiProperty({
-    description: '응답을 제출한 유저의 ID',
-    example: 1, // 예시 유저 ID
+    description: '선택한 옵션 ID (multiple-choice)',
+    example: 64,
+    required: false,
   })
   @IsNumber()
-  memberId: number;
-
-  @ApiPropertyOptional({
-    description: '객관식 응답일 경우 선택된 옵션의 ID',
-    example: 1,
-  })
-  @IsOptional()
-  @IsNumber()
+  @IsNotEmpty()
   selectedOptionId?: number;
 
-  @ApiPropertyOptional({
-    description: '주관식 응답 텍스트',
-    example: 'INTJ',
+  @ApiProperty({
+    description: '단답형 텍스트 답변 (short-answer)',
+    example: '저는 내향적입니다.',
+    required: false,
   })
-  @IsOptional()
-  @IsString()
+  @IsNotEmpty()
   answerText?: string;
+}
+
+export class CreateSurveyAnswerDto {
+  @ApiProperty({ description: '멤버 ID', example: 1 })
+  @IsNumber()
+  @IsNotEmpty()
+  memberId: number;
+
+  @ApiProperty({ description: '설문 ID', example: 5 })
+  @IsNumber()
+  @IsNotEmpty()
+  surveyId: number;
+
+  @ApiProperty({
+    description: '모든 질문에 대한 답변 배열',
+    type: [AnswerDto],
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AnswerDto)
+  answers: AnswerDto[];
 }
