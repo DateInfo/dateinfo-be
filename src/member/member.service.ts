@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { Member } from './entity/member.entity';
 import { CreateMemberDto } from './dtos/create-member.dto';
 import { WebhookService } from 'src/webhook/webhook.service';
-import { buildWebhookData } from 'src/webhook/webhook.utils';
 
 @Injectable()
 export class MemberService {
@@ -35,5 +34,14 @@ export class MemberService {
       // throw new HttpException('Member not found', HttpStatus.NOT_FOUND);
       throw new NotFoundException('Member not found');
     return member;
+  }
+
+  async findAiAnswer(mbr_id: number): Promise<string | null> {
+    const member = await this.repo.findOne({
+      where: { mbr_id },
+      select: ['aiAnswer'],
+    });
+
+    return member?.aiAnswer ?? null;
   }
 }
