@@ -8,6 +8,7 @@ import { Option } from '../entities/option.entity';
 import { Member } from 'src/member/entity/member.entity';
 import { CreateSurveyAnswerDto } from '../dtos/create-answer.dto';
 import { getEntityOrThrow } from 'src/utils/entity.helper';
+import { WebhookService } from 'src/webhook/webhook.service';
 
 @Injectable()
 export class AnswerService {
@@ -24,6 +25,7 @@ export class AnswerService {
     private readonly optionRepository: Repository<Option>,
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
+    private readonly webhookService: WebhookService,
   ) {}
 
   /**
@@ -89,6 +91,21 @@ export class AnswerService {
       this.logger.log(
         `Survey answers submitted: ${JSON.stringify(savedAnswers)}`,
       );
+
+      const webhookPayload = {
+        surveyId: savedAnswers[0].survey.id,
+        memberId: savedAnswers[0].member.mbr_id,
+        memberName: savedAnswers[0].member.mbr_name,
+        memberGender: savedAnswers[0].member.mbr_gender,
+        answers: savedAnswers.reduce((acc, answer) => {
+          acc[answer.question.questionText] =
+            answer.selectedOption?.optionText ?? answer.answerText ?? null;
+          return acc;
+        }, {}),
+      };
+      console.table(webhookPayload);
+
+      await this.webhookService.sendToMakeWebhook(webhookPayload);
 
       return {
         message: 'Survey answers submitted successfully',
