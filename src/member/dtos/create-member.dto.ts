@@ -7,6 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateMemberDto {
   // 필수 값
@@ -42,7 +43,15 @@ export class CreateMemberDto {
 
   @ApiProperty({ description: '회원 생일', example: '1990-01-01' })
   @IsNotEmpty()
-  @IsDate()
+  @Transform(({ value }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? null : date; // 변환 실패 시 null 반환
+  })
+  @IsDate({
+    message:
+      'mbr_birth_day must be a valid date (YYYY-MM-DD 형식이어야 합니다)',
+  })
   mbr_birth_day: Date;
 
   @ApiProperty({ description: '회원 이메일', example: 'example@example.com' })

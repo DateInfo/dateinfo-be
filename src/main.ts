@@ -2,8 +2,23 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { ValidationPipe } from '@nestjs/common';
+import { ValidationExceptionFilter } from './utils/validation-exception.filter';
+import { LoggingInterceptor } from './utils/logging.interceptor';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalInterceptors(new LoggingInterceptor());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
+
+  app.useGlobalFilters(new ValidationExceptionFilter());
 
   app.enableCors({
     origin: 'http://localhost:3000', // 개발 환경에서 프론트엔드 주소
